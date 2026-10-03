@@ -1,0 +1,25 @@
+{
+  "name": "steam-library-scores",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "millennium-ttc --build dev",
+    "build": "millennium-ttc --build prod",
+    "typecheck": "tsc --noEmit -p . && tsc --noEmit -p tests",
+    "test": "bun test",
+    "deploy:dry": "node scripts/deploy.mjs --dry-run",
+    "deploy": "node scripts/deploy.mjs"
+  },
+  "dependencies": {
+    "@steambrew/api": "^5.8.4",
+    "@steambrew/client": "^5.8.5",
+    "@steambrew/ttc": "^3.3.7"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.0.0"
+  }
+}

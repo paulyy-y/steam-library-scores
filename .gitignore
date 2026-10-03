@@ -1,0 +1,10 @@
+node_modules/
+package-lock.json
+.millennium/
+dist/
+*.zip
+nul
+
+# Runtime files written by the backend inside the installed plugin
+cache.json
+settings.json

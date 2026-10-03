@@ -1,0 +1,78 @@
+{
+  "response": {
+    "store_items": [
+      {
+        "item_type": 0,
+        "id": 34900,
+        "success": 1,
+        "visible": true,
+        "name": "Bad Rats: the Rats' Revenge",
+        "store_url_path": "app/34900/Bad_Rats_the_Rats_Revenge",
+        "store_url_slug": "Bad_Rats_the_Rats_Revenge",
+        "appid": 34900,
+        "type": 0,
+        "related_items": {
+          "demo_appid": [
+            34910
+          ],
+          "demos": [
+            {
+              "appid": 34910,
+              "show_above_purchase": false
+            }
+          ]
+        },
+        "content_descriptorids": [
+          2,
+          5
+        ],
+        "categories": {
+          "supported_player_categoryids": [
+            2
+          ],
+          "feature_categoryids": [
+            22,
+            29,
+            62
+          ]
+        },
+        "reviews": {
+          "summary_filtered": {
+            "review_count": 7059,
+            "percent_positive": 77,
+            "review_score": 6,
+            "review_score_label": "Mostly Positive"
+          },
+          "summary_language_specific": {
+            "review_count": 5179,
+            "percent_positive": 81,
+            "review_score": 8,
+            "review_score_label": "Very Positive"
+          }
+        },
+        "best_purchase_option": {
+          "packageid": 1861,
+          "purchase_option_name": "Bad Rats: the Rats Revenge",
+          "final_price_in_cents": "99",
+          "original_price_in_cents": "199",
+          "formatted_final_price": "$0.99",
+          "formatted_original_price": "$1.99",
+          "discount_pct": 50,
+          "active_discounts": [
+            {
+              "discount_amount": "100",
+              "discount_description": "#discount_desc_preset_special",
+              "discount_end_date": 1791478800
+            }
+          ],
+          "user_can_purchase_as_gift": true,
+          "hide_discount_pct_for_compliance": false,
+          "included_game_count": 1,
+          "must_purchase_as_set": false,
+          "package_group": "default",
+          "price_cannot_be_displayed_as_discount": false
+        }
+      }
+    ]
+  }
+}
