@@ -1,12 +1,13 @@
 import { callable } from '@steambrew/client';
 import type { RawSources, ScoreKey } from '../scores/types';
 
-export type SourceKey = 'storebrowse' | 'appreviews' | 'recent_row';
+export type SourceKey = 'storebrowse' | 'appreviews' | 'recent_row' | 'metacritic';
 
-export const SCORE_FOR_SOURCE: Record<SourceKey, ScoreKey> = {
-  storebrowse: 'reviews',
-  appreviews: 'steamdb',
-  recent_row: 'recent',
+export const SCORES_FOR_SOURCE: Record<SourceKey, ScoreKey[]> = {
+  storebrowse: ['reviews'],
+  appreviews: ['steamdb'],
+  recent_row: ['recent'],
+  metacritic: ['metacritic', 'metacriticUser'],
 };
 
 export interface CachedState {
@@ -22,7 +23,7 @@ export interface FetchState extends CachedState {
 }
 
 const GetCachedRpc = callable<[{ app_id: number }], string>('GetCached');
-const FetchGameRpc = callable<[{ app_id: number; force: boolean }], string>('FetchGame');
+const FetchGameRpc = callable<[{ app_id: number; force: boolean; name: string }], string>('FetchGame');
 const FetchReviewsBatchRpc = callable<[{ app_ids_json: string }], string>('FetchReviewsBatch');
 const LogRpc = callable<[{ message: string }], string>('Log');
 export const ClearCache = callable<[], string>('ClearCache');
@@ -67,9 +68,10 @@ export async function getCached(appId: number): Promise<CachedState | null> {
   }
 }
 
-export async function fetchGame(appId: number, force = false): Promise<FetchState | null> {
+// name: the game's Steam name, which Metacritic is searched by.
+export async function fetchGame(appId: number, name: string | undefined, force = false): Promise<FetchState | null> {
   try {
-    const result = parse(await FetchGameRpc({ app_id: appId, force }));
+    const result = parse(await FetchGameRpc({ app_id: appId, force, name: name ?? '' }));
     if (!result) return null;
     return {
       ...toCachedState(result),

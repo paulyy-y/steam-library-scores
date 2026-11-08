@@ -3,7 +3,7 @@
 import { buildCells } from '../scores/format';
 import { parseScores } from '../scores/parse';
 import type { RawSources, ScoreKey } from '../scores/types';
-import { fetchGame, getCached, SCORE_FOR_SOURCE, type SourceKey } from '../services/backend';
+import { fetchGame, getCached, SCORES_FOR_SOURCE, type SourceKey } from '../services/backend';
 import { localAppData } from '../lib/steam';
 import { log } from '../services/logger';
 import { getSettings } from '../services/settings';
@@ -26,11 +26,11 @@ let routePatchCleanup: (() => void) | null = null;
 
 function anyScoreEnabled(): boolean {
   const s = getSettings();
-  return s.showReviews || s.showRecent || s.showSteamDb || s.showMetacritic;
+  return s.showReviews || s.showRecent || s.showSteamDb || s.showMetacritic || s.showMetacriticUser;
 }
 
 const pendingFor = (missing: SourceKey[]): Pending =>
-  Object.fromEntries(missing.map((key) => [SCORE_FOR_SOURCE[key], true]));
+  Object.fromEntries(missing.flatMap((key) => SCORES_FOR_SOURCE[key]).map((key) => [key, true]));
 
 function render(doc: Document, appId: number, raw: RawSources | null, pending: Pending): HTMLElement {
   if (!raw) return createDisplay(doc);
@@ -122,7 +122,7 @@ async function handleGamePage(doc: Document, mode: UIMode): Promise<void> {
     if (cached.missing.length === 0 && cached.stale.length === 0) return;
 
     // Fetch only what is missing or stale; sources that still fail show "--".
-    const fetched = await fetchGame(appId);
+    const fetched = await fetchGame(appId, localAppData(appId).name);
     show(fetched ? fetched.raw : cached.raw, {});
   } finally {
     if (processingAppId === appId) processingAppId = null;

@@ -9,6 +9,7 @@ M.DEFAULTS = {
     showRecent = true,
     showSteamDb = true,
     showMetacritic = true,
+    showMetacriticUser = true,
 }
 
 local function settings_path()

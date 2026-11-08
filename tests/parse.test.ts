@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import {
   localMetacritic,
   parseAllReviews,
+  parseMetacritic,
   parseRecentRow,
   parseScores,
   parseSteamDb,
@@ -94,6 +95,44 @@ describe('localMetacritic', () => {
     expect(localMetacritic(75, undefined)).toEqual({ score: 75, url: null });
   });
 });
+describe('parseMetacritic', () => {
+  it('reads the PC critic and user scores with links to their review pages', () => {
+    expect(parseMetacritic(fixture(CK3, 'metacritic.json'))).toEqual({
+      critic: {
+        score: 91,
+        url: 'https://www.metacritic.com/game/crusader-kings-iii/critic-reviews/?platform=pc',
+        count: 61,
+        label: 'Universal acclaim',
+      },
+      user: {
+        score: 8,
+        url: 'https://www.metacritic.com/game/crusader-kings-iii/user-reviews/?platform=pc',
+        count: 1303,
+        label: 'Generally favorable',
+      },
+    });
+  });
+
+  it('returns null for a score Metacritic has no value or no stats for', () => {
+    // Critic stats come back with a null score; user stats 404, which the backend stores as false.
+    const body = JSON.stringify({ slug: 'x', critic: { score: null, url: '/game/x/critic-reviews/?platform=pc' }, user: false });
+    expect(parseMetacritic(body)).toEqual({ critic: null, user: null });
+  });
+
+  it('treats a score with no reviews as no score', () => {
+    // Star Birds: Metacritic reports a user score of 0 from 0 ratings rather than null.
+    const user = { score: 0, reviewCount: 0, sentiment: null, url: '/game/star-birds/user-reviews/?platform=pc' };
+    expect(parseMetacritic(JSON.stringify({ slug: 'star-birds', critic: false, user })).user).toBeNull();
+  });
+
+  it('returns nulls when there is no match, no fetch yet or a bad body', () => {
+    const none = { critic: null, user: null };
+    expect(parseMetacritic(false)).toEqual(none);
+    expect(parseMetacritic(undefined)).toEqual(none);
+    expect(parseMetacritic('not json')).toEqual(none);
+  });
+});
+
 describe('parseRecentRow', () => {
   it('reads the recent summary, ignoring the off-topic note', () => {
     expect(parseRecentRow(fixture(CK3, 'recent_row.html'))).toEqual({
@@ -127,6 +166,19 @@ describe('parseRecentRow', () => {
 });
 
 describe('parseScores', () => {
+  it('prefers live Metacritic scores over the local one', () => {
+    const scores = parseScores(CK3, { metacritic: fixture(CK3, 'metacritic.json') }, { metacriticScore: 88, name: 'Crusader Kings III' });
+    expect(scores.metacritic?.score).toBe(91);
+    expect(scores.metacritic?.count).toBe(61);
+    expect(scores.metacriticUser?.score).toBe(8);
+  });
+
+  it('falls back to the local Metacritic score when Metacritic has no match', () => {
+    const scores = parseScores(CK3, { metacritic: false }, { metacriticScore: 91, name: 'Crusader Kings III' });
+    expect(scores.metacritic).toEqual({ score: 91, url: 'https://www.metacritic.com/search/Crusader%20Kings%20III/' });
+    expect(scores.metacriticUser).toBeNull();
+  });
+
   it('combines the fetched sources with the local Metacritic score', () => {
     const scores = parseScores(
       CK3,
@@ -151,6 +203,7 @@ describe('parseScores', () => {
       recent: null,
       steamdb: null,
       metacritic: null,
+      metacriticUser: null,
     });
   });
 });

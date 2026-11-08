@@ -8,10 +8,12 @@ in a strip at the bottom-left of the game's hero image (Desktop and Big Picture)
 | **Reviews** | Steam's all-language review summary (`IStoreBrowseService/GetItems`, `summary_filtered`), fetched in batches |
 | **Recent** | The store page's "Recent Reviews" row (last 30 days, off-topic periods excluded). Steam has no API for it. |
 | **SteamDB** | SteamDB's formula over all reviews, all purchase types, off-topic included (`appreviews`) |
-| **Metacritic** | `metacritic_score` from Steam's local app overview (no request) |
+| **Metacritic** | PC Metascore from Metacritic, for the game Steam's own Metacritic link points to (else the PC game with exactly the Steam name); else `metacritic_score` from Steam's local app overview |
+| **MC User** | PC user score from Metacritic, matched the same way |
 
 Scores are coloured like Steam's review colours. Hover for details, click to open the source:
-review pages open in Steam, SteamDB and a Metacritic search in your browser. Each score can be
+review pages open in Steam, SteamDB and Metacritic's PC review pages (or a Metacritic search, for
+Steam's local score) in your browser. Each score can be
 turned off in Steam menu > Millennium Library Manager > Library Scores. Non-Steam shortcuts are
 skipped.
 
@@ -20,7 +22,7 @@ skipped.
 - Prefetch, so pages open with scores already there (`frontend/prefetch`), starting 10 s after
   Steam starts:
   - Review summaries for the whole library, 50 games per request, re-checked every 6 hours.
-  - SteamDB and recent reviews one game every 3 s, in this order: rows visible in the library
+  - SteamDB, recent reviews and Metacritic one game every 3 s, in this order: rows visible in the library
     list, games played in the last 90 days, installed games. The order is refreshed every 30 s.
   - On HTTP 429 from Steam, prefetch pauses for 5 minutes.
 - Opening a game shows whatever is cached at once ("…" for parts still loading) and fetches only
@@ -30,7 +32,10 @@ skipped.
   after 30 days. Lua handles one call at a time, so opening a page waits for at most one prefetch
   request.
 - `frontend/scores/` (TypeScript) parses the raw bodies and builds the cells. All parsing lives
-  here so it can be unit tested.
+  here so it can be unit tested, except picking the Metacritic game, since it decides what to
+  fetch next: `backend/sources.lua` takes the slug from the Metacritic link in Steam's
+  `appdetails` (matched by app id), and only searches Metacritic by name when Steam has none. Metacritic has no public
+  API; this uses the undocumented backend its website calls, which can change without notice.
 - `frontend/injection/` detects library game pages and injects the strip.
 
 Plugin data files go in the plugin's folder (`backend/paths.lua`), not

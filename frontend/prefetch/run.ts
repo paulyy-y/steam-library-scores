@@ -1,4 +1,4 @@
-import { libraryApps, visibleListAppIds } from '../lib/steam';
+import { libraryApps, localAppData, visibleListAppIds } from '../lib/steam';
 import { fetchGame, fetchReviewsBatch, log } from '../services/backend';
 import { prefetchOrder } from './candidates';
 import { PrefetchQueue, type QueueOptions, type RunResult } from './queue';
@@ -24,7 +24,7 @@ const QUEUE_OPTIONS: QueueOptions = {
 const isSteamApp = (appId: number) => appId > 0 && appId < 0x80000000;
 
 async function prefetchGame(appId: number): Promise<RunResult> {
-  const result = await fetchGame(appId);
+  const result = await fetchGame(appId, localAppData(appId).name);
   if (!result) return 'error';
   if (result.rateLimited) return 'rate_limited';
   if (result.errors.length > 0) return 'error';
@@ -33,8 +33,8 @@ async function prefetchGame(appId: number): Promise<RunResult> {
 
 /**
  * Background prefetch so game pages open with their scores already cached:
- * review summaries for the whole library in batches, then SteamDB and recent
- * reviews one game at a time for visible, recently played and installed games.
+ * review summaries for the whole library in batches, then SteamDB, recent
+ * reviews and Metacritic one game at a time for visible, recently played and installed games.
  * Returns a stop function.
  */
 export function startPrefetch(doc: Document): () => void {

@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS: PluginSettings = {
   showRecent: true,
   showSteamDb: true,
   showMetacritic: true,
+  showMetacriticUser: true,
 };
 
 const GetSettingsRpc = callable<[], string>('GetSettings');

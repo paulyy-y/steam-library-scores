@@ -17,7 +17,8 @@ const TOGGLES: { key: keyof PluginSettings; label: string; description: string }
   { key: 'showReviews', label: 'Reviews', description: "Steam's all-language review score" },
   { key: 'showRecent', label: 'Recent reviews', description: 'Reviews from the last 30 days' },
   { key: 'showSteamDb', label: 'SteamDB rating', description: "SteamDB's formula over all reviews" },
-  { key: 'showMetacritic', label: 'Metacritic', description: 'Critic score, when Steam lists one' },
+  { key: 'showMetacritic', label: 'Metacritic', description: "PC critic score from Metacritic, else Steam's own" },
+  { key: 'showMetacriticUser', label: 'Metacritic user score', description: 'PC user score from Metacritic' },
 ];
 
 const SettingsContent = () => {

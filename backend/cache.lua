@@ -1,7 +1,7 @@
 --[[
     Per-game cache of raw source data, kept in memory and in cache.json in the
     plugin's own folder (see paths.lua). Each source (storebrowse, appreviews,
-    recent_row) has its own timestamp: stale after 12 hours (shown, then refreshed),
+    recent_row, metacritic) has its own timestamp: stale after 12 hours (shown, then refreshed),
     dropped after 30 days. Call save() after a batch of changes.
 ]]
 
@@ -14,7 +14,7 @@ local M = {}
 M.STALE_SECONDS = 12 * 60 * 60
 M.EXPIRE_SECONDS = 30 * 24 * 60 * 60
 M.MAX_ENTRIES = 5000
-M.SOURCES = { "storebrowse", "appreviews", "recent_row" }
+M.SOURCES = { "storebrowse", "appreviews", "recent_row", "metacritic" }
 
 local entries = {}
 

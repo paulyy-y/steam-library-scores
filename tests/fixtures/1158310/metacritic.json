@@ -1,0 +1,25 @@
+{
+  "slug": "crusader-kings-iii",
+  "critic": {
+    "id": null,
+    "max": 100,
+    "score": 91,
+    "reviewCount": 61,
+    "positiveCount": 61,
+    "neutralCount": 0,
+    "negativeCount": 0,
+    "sentiment": "Universal acclaim",
+    "url": "/game/crusader-kings-iii/critic-reviews/?platform=pc"
+  },
+  "user": {
+    "id": "1400580226",
+    "max": 10,
+    "score": 8,
+    "reviewCount": 1303,
+    "positiveCount": 1013,
+    "neutralCount": 169,
+    "negativeCount": 121,
+    "sentiment": "Generally favorable",
+    "url": "/game/crusader-kings-iii/user-reviews/?platform=pc"
+  }
+}

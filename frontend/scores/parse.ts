@@ -40,6 +40,27 @@ export function localMetacritic(score: number | undefined, name: string | undefi
   return { score, url };
 }
 
+// The PC stats item the backend keeps from Metacritic's critic or user stats.
+function metacriticStats(item: any): MetacriticScore | null {
+  // A game nobody has rated yet comes back as score 0 from 0 reviews, not as null.
+  if (typeof item?.score !== 'number' || !(item.reviewCount > 0)) return null;
+  return {
+    score: item.score,
+    url: typeof item.url === 'string' ? `https://www.metacritic.com${item.url}` : null,
+    count: item.reviewCount,
+    label: item.sentiment,
+  };
+}
+
+// { slug, critic, user } from backend/sources.lua fetch_metacritic, PC scores only.
+export function parseMetacritic(body: string | false | null | undefined): {
+  critic: MetacriticScore | null;
+  user: MetacriticScore | null;
+} {
+  const parsed = body ? parseJson(body) : null;
+  return { critic: metacriticStats(parsed?.critic), user: metacriticStats(parsed?.user) };
+}
+
 const RECENT_SUBTITLE = /<div class="subtitle column[^"]*">\s*Recent Reviews:\s*<\/div>/;
 const RECENT_TOOLTIP = /data-tooltip-html="(\d+)% of the ([\d,]+) user reviews in the last 30 days/;
 const SUMMARY_LABEL = /<span class="game_review_summary[^"]*"[^>]*>([^<]+)<\/span>/;
@@ -64,10 +85,12 @@ export interface LocalAppData {
 }
 
 export function parseScores(appId: number, raw: RawSources, local: LocalAppData): Scores {
+  const live = parseMetacritic(raw.metacritic);
   return {
     reviews: parseAllReviews(raw.storebrowse),
     recent: parseRecentRow(raw.recent_row),
     steamdb: parseSteamDb(raw.appreviews),
-    metacritic: localMetacritic(local.metacriticScore, local.name),
+    metacritic: live.critic ?? localMetacritic(local.metacriticScore, local.name),
+    metacriticUser: live.user,
   };
 }

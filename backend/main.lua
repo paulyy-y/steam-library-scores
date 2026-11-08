@@ -21,6 +21,7 @@ local GAME_SOURCES = {
     end },
     { key = "appreviews", fetch = sources.fetch_appreviews },
     { key = "recent_row", fetch = sources.fetch_recent_row },
+    { key = "metacritic", fetch = sources.fetch_metacritic },
 }
 
 -- Runs fn and returns its JSON result, or a JSON error if it throws.
@@ -67,8 +68,9 @@ function GetCached(app_id)
 end
 
 -- Fetches the sources of one game that are missing or stale (all of them when force).
+-- name is the game's Steam name, which Metacritic is searched by.
 -- fetched = number of requests made; rateLimited when Steam answered 429.
-function FetchGame(app_id, force)
+function FetchGame(app_id, force, name)
     return guarded("FetchGame", function()
         app_id = valid_app_id(app_id)
         if not app_id then
@@ -77,7 +79,7 @@ function FetchGame(app_id, force)
         local fetched, errors, rate_limited = 0, {}, false
         for _, source in ipairs(GAME_SOURCES) do
             if force or cache.state(app_id, source.key) ~= "fresh" then
-                local body, err, status = source.fetch(app_id)
+                local body, err, status = source.fetch(app_id, name)
                 fetched = fetched + 1
                 if body ~= nil then
                     cache.set(app_id, source.key, body)

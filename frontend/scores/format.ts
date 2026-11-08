@@ -32,7 +32,7 @@ export function buildCells(
   pending: Partial<Record<ScoreKey, boolean>> = {},
 ): ScoreCell[] {
   const cells: ScoreCell[] = [];
-  const { reviews, recent, steamdb, metacritic } = scores;
+  const { reviews, recent, steamdb, metacritic, metacriticUser } = scores;
 
   if (toggles.showReviews) {
     cells.push(
@@ -93,7 +93,9 @@ export function buildCells(
             key: 'metacritic',
             value: String(metacritic.score),
             label: 'Metacritic',
-            tooltip: `Metacritic ${metacritic.score}`,
+            tooltip: metacritic.label
+              ? `Metascore ${metacritic.score} (PC) · ${metacritic.label} · ${formatCount(metacritic.count ?? 0)} critic reviews`
+              : `Metacritic ${metacritic.score}`,
             tone: metacriticTone(metacritic.score),
             href: metacritic.url ? external(metacritic.url) : null,
           }
@@ -102,6 +104,28 @@ export function buildCells(
             value: MISSING,
             label: 'Metacritic',
             tooltip: 'No Metacritic score',
+            tone: 'none',
+            href: null,
+          },
+    );
+  }
+
+  if (toggles.showMetacriticUser) {
+    cells.push(
+      metacriticUser
+        ? {
+            key: 'metacriticUser',
+            value: metacriticUser.score.toFixed(1),
+            label: 'MC User',
+            tooltip: `Metacritic user score ${metacriticUser.score.toFixed(1)} (PC) · ${metacriticUser.label} · ${formatCount(metacriticUser.count ?? 0)} ratings`,
+            tone: metacriticTone(metacriticUser.score * 10),
+            href: metacriticUser.url ? external(metacriticUser.url) : null,
+          }
+        : {
+            key: 'metacriticUser',
+            value: MISSING,
+            label: 'MC User',
+            tooltip: 'No Metacritic user score',
             tone: 'none',
             href: null,
           },

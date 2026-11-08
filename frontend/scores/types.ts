@@ -1,9 +1,11 @@
 // Raw response bodies as returned (and cached) by the Lua backend.
-// A missing key means not fetched yet; recent_row is false when the store page has no recent row.
+// A missing key means not fetched yet; recent_row is false when the store page has no recent row,
+// metacritic is false when Metacritic has no PC game by the Steam name.
 export interface RawSources {
   storebrowse?: string | null;
   appreviews?: string | null;
   recent_row?: string | false | null;
+  metacritic?: string | false | null;
 }
 
 export interface ReviewScore {
@@ -18,8 +20,10 @@ export interface SteamDbScore {
 }
 
 export interface MetacriticScore {
-  score: number;
+  score: number; // critic 0-100, user 0-10
   url: string | null;
+  count?: number; // only from Metacritic itself, not Steam's local score
+  label?: string; // e.g. "Universal acclaim"
 }
 
 export interface Scores {
@@ -27,6 +31,7 @@ export interface Scores {
   recent: ReviewScore | null;
   steamdb: SteamDbScore | null;
   metacritic: MetacriticScore | null;
+  metacriticUser: MetacriticScore | null;
 }
 
 export type ScoreKey = keyof Scores;
@@ -36,6 +41,7 @@ export interface ScoreToggles {
   showRecent: boolean;
   showSteamDb: boolean;
   showMetacritic: boolean;
+  showMetacriticUser: boolean;
 }
 
 export type Tone = 'positive' | 'mixed' | 'negative' | 'none';
